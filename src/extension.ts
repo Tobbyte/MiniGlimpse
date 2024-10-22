@@ -1,24 +1,46 @@
 import * as vscode from 'vscode';
 
+let isExtensionEnabled = true;
+
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "minimap-orientation" is now active!');
 
-    let disposable = vscode.commands.registerCommand('minimap-orientation.helloWorld', () => {
-        vscode.window.showInformationMessage('Minimap will be shown when text is selected.');
+    let enableDisposable = vscode.commands.registerCommand('minimap-orientation.enableMinimap', () => {
+        isExtensionEnabled = true;
+        vscode.window.showInformationMessage('Minimap orientation extension enabled.');
     });
 
-    context.subscriptions.push(disposable);
+    let disableDisposable = vscode.commands.registerCommand('minimap-orientation.disableMinimap', () => {
+        isExtensionEnabled = false;
+        // Reset minimap.enabled to its default (let VS Code handle it)
+        vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
+        vscode.window.showInformationMessage('Minimap orientation extension disabled. Using default VS Code settings.');
+    });
 
-    vscode.window.onDidChangeTextEditorSelection((event) => {
-        const editor = event.textEditor;
+    context.subscriptions.push(enableDisposable, disableDisposable);
+
+    const updateMinimapVisibility = () => {
+        if (!isExtensionEnabled) {
+            return;
+        }
+
+        const editor = vscode.window.activeTextEditor;
+        if (!editor) {
+            return;
+        }
+
         const selections = editor.selections;
+        const searchHighlight = selections.some(selection => !selection.isEmpty);
 
-        if (selections.some(selection => !selection.isEmpty)) {
+        if (searchHighlight) {
             vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
         } else {
             vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
         }
-    });
+    };
+
+    vscode.window.onDidChangeTextEditorSelection(updateMinimapVisibility);
+    vscode.workspace.onDidChangeTextDocument(updateMinimapVisibility);
 }
 
 export function deactivate() {}

@@ -9,13 +9,17 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "minimap-orientation.helloWorld",
         "title": "Hello World"
+      },
+      {
+        "command": "minimap-orientation.disableMinimap",
+        "title": "disable Minimap"
       }
     ]
   },
