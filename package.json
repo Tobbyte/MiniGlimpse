@@ -1,6 +1,6 @@
 {
-  "name": "minimap-orientation",
-  "displayName": "minimap-orientation",
+  "name": "mini-glimpse",
+  "displayName": "mini-glimpse",
   "description": "",
   "version": "0.0.1",
   "engines": {
@@ -14,12 +14,12 @@
   "contributes": {
     "commands": [
       {
-        "command": "minimap-orientation.helloWorld",
-        "title": "Hello World"
+        "command": "mini-glimpse.enableMiniGlimpse",
+        "title": "enable MiniGlimpse"
       },
       {
-        "command": "minimap-orientation.disableMinimap",
-        "title": "disable Minimap"
+        "command": "mini-glimpse.disableMiniGlimpse",
+        "title": "disable MiniGlimpse"
       }
     ]
   },

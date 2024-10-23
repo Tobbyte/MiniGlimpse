@@ -1,6 +1,6 @@
-# minimap-orientation README
+# mini-glimpse README
 
-This is the README for your extension "minimap-orientation". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "mini-glimpse". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
