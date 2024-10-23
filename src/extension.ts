@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 
 let isExtensionEnabled = true;
+let needDisable = false;
+let isTextSelected = false;
+let timer: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "mini-glimpse" is now active!');
@@ -17,30 +20,76 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
     });
 
-    context.subscriptions.push(enableDisposable, disableDisposable);
+    context.subscriptions.push(
+        enableDisposable,
+        disableDisposable,
+        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange)
 
-    const updateMinimapVisibility = () => {
-        if (!isExtensionEnabled) {
-            return;
-        }
+    );
 
-        const editor = vscode.window.activeTextEditor;
-        if (!editor) {
-            return;
-        }
-
-        const selections = editor.selections;
-        const searchHighlight = selections.some(selection => !selection.isEmpty);
-
-        if (searchHighlight) {
-            vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
-        } else {
-            vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
-        }
-    };
-
-    vscode.window.onDidChangeTextEditorSelection(updateMinimapVisibility);
-    vscode.workspace.onDidChangeTextDocument(updateMinimapVisibility);
+    populateEditorWithText();
 }
 
-export function deactivate() {}
+
+
+function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
+
+    if (!isExtensionEnabled) {
+        return;
+    }
+    
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+        return;
+    }
+
+    if (!event.selections[0].isEmpty) {
+        isTextSelected = true;
+        
+        clearTimer();
+        enableMM();
+
+    } else {
+        isTextSelected = false;
+        
+        if (needDisable) {
+            disableMM();
+        }
+    }
+    console.log(isTextSelected);
+};
+
+function enableMM() {
+    needDisable = true;
+    vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
+}
+
+function clearTimer(){
+    clearTimeout(timer);
+    timer = undefined;
+};
+
+function disableMM() {
+    clearTimer();
+    
+    vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
+
+    timer = setTimeout(() => {
+        if (!isTextSelected) {
+            vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
+            vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
+        
+            needDisable = false;
+        }
+        
+        timer = undefined;
+
+    }, 510);
+}
+
+const populateEditorWithText = async () => {
+    const document = await vscode.workspace.openTextDocument({ content: 'Sample text to select for debugging.' });
+    await vscode.window.showTextDocument(document);
+};
+
+export function deactivate() { }
