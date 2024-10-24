@@ -26,6 +26,8 @@ This extension provides the following commands:
 ## TODOs
 
 * [ ] settings: enable/disable, autohide delay, use autohide animation
+* [ ] enable when start search
+* [ ] ? option to disable setting "Editor: Selection Highlight" ?
 * [ ] save minimap and autohide settings on first init and restore to when disabled
 * [ ] debounce handleSelectionChange
 * [ ] tests

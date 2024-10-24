@@ -15,18 +15,6 @@ import * as vscode from 'vscode';
 /// Accomodates issue #232011: Show minimap only during search (https://github.com/microsoft/vscode/issues/232011)
 ///
 
-///
-/// TODOs:
-/// [ ]  - settings: enable/disable, autohide delay, use autohide animation
-/// [ ]  - save minimap and autohide settings on first init and restore to when disabled
-/// [ ]  - debounce handleSelectionChange
-/// [ ]  - tests
-///      - Add Features:
-///         [ ] - fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
-///         [ ] - autohide delay setting
-///         [ ] - open / close when search is active
-
-///
 
 
 let isDebug = false;
