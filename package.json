@@ -1,13 +1,30 @@
 {
   "name": "mini-glimpse",
   "displayName": "MiniGlimpse",
-  "description": "",
+  "description": "MiniGlimpse displays the minimap only when text is selected, providing a cleaner and more focused coding environment.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
+  ],
+  "publisher": "Tobbyte",
+	"author": {
+		"name": "Tobbyte"
+	},
+  "keywords": [
+    "minimap",
+    "miniglimpse",
+    "minimap toggle",
+    "minimap on selection",
+    "minimap autohide",
+    "minimap auto hide",
+    "autohide",
+    "auto hide",
+    "hide minimap",
+    "selection",
+    "on select"
   ],
   "activationEvents": ["onStartupFinished"],
   "main": "./out/extension.js",
