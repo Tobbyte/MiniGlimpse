@@ -30,9 +30,11 @@ If you have any requirements or dependencies, add a section describing those and
 
 ## TODOs
 
-* Features:
-    * fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
-    * autohide delay setting
-    * open / close when search is active
-* Add settings: enable/disable, autohide delay, use autohide animation
-* Add tests
+* [ ] settings: enable/disable, autohide delay, use autohide animation
+* [ ] save minimap and autohide settings on first init and restore to when disabled
+* [ ] debounce handleSelectionChange
+* [ ] tests
+* Add Features:
+* * [ ] fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
+* * [ ] autohide delay setting
+* * [ ] open / close when search is active
