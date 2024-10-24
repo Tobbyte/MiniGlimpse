@@ -1,95 +1,94 @@
 import * as vscode from 'vscode';
+let isDebug = true;
 
 let isExtensionEnabled = true;
-let needDisable = false;
-let isTextSelected = false;
 let timer: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Congratulations, your extension "mini-glimpse" is now active!');
+    console.log('Extension MiniGlimpse is now active!');
 
-    let enableDisposable = vscode.commands.registerCommand('mini-glimpse.enableMinimap', () => {
-        isExtensionEnabled = true;
-        vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
-    });
-
-    let disableDisposable = vscode.commands.registerCommand('mini-glimpse.disableMinimap', () => {
-        isExtensionEnabled = false;
-        // Reset minimap.enabled to its default (let VS Code handle it)
-        vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
-        vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
-    });
-
+    vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
+    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
+    
     context.subscriptions.push(
-        enableDisposable,
-        disableDisposable,
-        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange)
-
+        vscode.commands.registerCommand('mini-glimpse.enableMiniGlimpse', enableExtension),
+        vscode.commands.registerCommand('mini-glimpse.disableMiniGlimpse', disableExtension)
     );
 
-    populateEditorWithText();
+    context.subscriptions.push(
+        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange)
+    );
+
+    if (isDebug) {
+        populateEditorWithText();
+    }
 }
 
+function enableExtension() {
+    isExtensionEnabled = true;
+    vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
+}
 
+function disableExtension() {
+    isExtensionEnabled = false;
+    // Reset minimap.enabled to its default
+    vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
+    vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
+}
+
+let isMinimapScheduledToHide = false; // Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
 
 function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
-
     if (!isExtensionEnabled) {
-        return;
-    }
-    
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        return;
+        return; 
     }
 
-    if (!event.selections[0].isEmpty) {
-        isTextSelected = true;
-        
-        clearTimer();
-        enableMM();
+    const isTextSelected = event.selections.some(selection => !selection.isEmpty);
 
-    } else {
-        isTextSelected = false;
-        
-        if (needDisable) {
-            disableMM();
+    if (isTextSelected) {
+        isMinimapScheduledToHide = false; // Text selected, don't hide
+        vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
+        vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global); 
+    } else if (!isMinimapScheduledToHide) { 
+        // No text selected, schedule hiding if not already scheduled
+        isMinimapScheduledToHide = true;
+        if (timer) {
+            clearTimeout(timer); 
         }
+
+        vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
+        
+        timer = setTimeout(() => {
+            if (isMinimapScheduledToHide) { // Double-check if request still valid
+                vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
+                vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
+            }
+            timer = undefined;
+        }, 500); 
     }
-    console.log(isTextSelected);
-};
-
-function enableMM() {
-    needDisable = true;
-    vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
 }
-
-function clearTimer(){
-    clearTimeout(timer);
-    timer = undefined;
-};
-
-function disableMM() {
-    clearTimer();
-    
-    vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
-
-    timer = setTimeout(() => {
-        if (!isTextSelected) {
-            vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
-            vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
-        
-            needDisable = false;
-        }
-        
-        timer = undefined;
-
-    }, 510);
-}
-
-const populateEditorWithText = async () => {
-    const document = await vscode.workspace.openTextDocument({ content: 'Sample text to select for debugging.' });
-    await vscode.window.showTextDocument(document);
-};
 
 export function deactivate() { }
+
+/// Debugging helper function to populate the editor with text
+const populateEditorWithText = async () => {
+    const document = await vscode.workspace.openTextDocument({ content:
+        'Sample text to select for debugging.\n' +
+        'Yadda Yadda try and select me.\n' +
+        ' \n' +
+        ' \n' +
+        'I am a text that you can select.\n' +
+        'Select me to see the minimap.\n' +
+        'Unselect me to hide the minimap.\n' +
+        ' \n' +
+        ' \n' +
+        'Select me to see the minimap.\n' +
+        'Unselect me to hide the minimap.\n' +
+        ' \n' +
+        ' \n' +
+        ' \n' +
+        ' \n' +
+        'Love You! ❤️'
+    });
+    await vscode.window.showTextDocument(document);
+};
