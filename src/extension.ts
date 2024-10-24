@@ -1,4 +1,32 @@
 import * as vscode from 'vscode';
+
+///
+/// This extension hides the minimap when no text is selected and shows it when text is selected.
+///
+/// The extension is enabled by default. To disable it, run the command "MiniGlimpse: Disable Minimap".
+/// To enable it back, run the command "MiniGlimpse: Enable Minimap".
+///
+/// The extension listens to the "onDidChangeTextEditorSelection" event to detect text selection.
+/// It works by setting the following editor settings:
+/// - minimap.enabled
+/// - minimap.disabled
+/// - minimap.autohide
+///
+/// Accomodates issue #232011: Show minimap only during search (https://github.com/microsoft/vscode/issues/232011)
+///
+
+///
+/// TODOs:
+/// - Features:
+///     - fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
+///     - autohide delay setting
+///     - open / close when search is active
+
+/// - Add settings: enable/disable, autohide delay, use autohide animation
+/// - Add tests
+///
+
+
 let isDebug = true;
 
 let isExtensionEnabled = true;
