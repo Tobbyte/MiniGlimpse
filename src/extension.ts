@@ -29,9 +29,9 @@ import * as vscode from 'vscode';
 ///
 
 
-let isDebug = true;
+let isDebug = false;
 
-let isExtensionEnabled = true;
+let isMiniGlimpseEnabled = true;
 let timer: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -55,12 +55,12 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function enableExtension() {
-    isExtensionEnabled = true;
+    isMiniGlimpseEnabled = true;
     vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
 }
 
 function disableExtension() {
-    isExtensionEnabled = false;
+    isMiniGlimpseEnabled = false;
     // Reset minimap.enabled to its default
     vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
     vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
@@ -69,7 +69,7 @@ function disableExtension() {
 let isMinimapScheduledToHide = false; // Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
 
 function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
-    if (!isExtensionEnabled) {
+    if (!isMiniGlimpseEnabled) {
         return; 
     }
 
@@ -77,8 +77,7 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
 
     if (isTextSelected) {
         isMinimapScheduledToHide = false; // Text selected, don't hide
-        vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
-        vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global); 
+        showMinimap();
     } else if (!isMinimapScheduledToHide) { 
         // No text selected, schedule hiding if not already scheduled
         isMinimapScheduledToHide = true;
@@ -88,14 +87,27 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
 
         vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
         
-        timer = setTimeout(() => {
-            if (isMinimapScheduledToHide) { // Double-check if request still valid
-                vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
-                vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
-            }
-            timer = undefined;
-        }, 500); 
+        scheduleHideMiniMap(); 
     }
+}
+
+function scheduleHideMiniMap() {
+    timer = setTimeout(() => {
+        if (isMinimapScheduledToHide) { // Double-check if request still valid
+            hideMiniMap();
+        }
+        timer = undefined;
+    }, 500);
+}
+
+function showMinimap() {
+    vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
+    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global); 
+}
+
+function hideMiniMap(){
+    vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
+    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
 }
 
 export function deactivate() { }
