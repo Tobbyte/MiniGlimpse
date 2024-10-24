@@ -12,11 +12,6 @@ This extension provides the following commands:
 * `MiniGlimpse.disable`: Disable MiniGlimpse and reset the minimap to VS Code's default settings.
 
 
-## Requirements
-
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
-
-
 ## Extension Settings
 
 * coming soon
