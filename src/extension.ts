@@ -64,19 +64,27 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
     const isTextSelected = event.selections.some(selection => !selection.isEmpty);
 
     if (isTextSelected) {
-        isMinimapScheduledToHide = false; // Text selected, don't hide
-        showMinimap();
+        requestShowMiniMap();
     } else if (!isMinimapScheduledToHide) { 
-        // No text selected, schedule hiding if not already scheduled
-        isMinimapScheduledToHide = true;
-        if (timer) {
-            clearTimeout(timer); 
-        }
-
-        vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
-        
-        scheduleHideMiniMap(); 
+        requestHideMiniMap();
     }
+}
+
+function requestShowMiniMap() {
+    isMinimapScheduledToHide = false; // Text selected, don't hide
+    showMinimap();
+}
+
+function requestHideMiniMap() {
+    // No text selected, schedule hiding if not already scheduled
+    isMinimapScheduledToHide = true;
+    if (timer) {
+        clearTimeout(timer); 
+    }
+
+    vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
+    
+    scheduleHideMiniMap(); 
 }
 
 function scheduleHideMiniMap() {
