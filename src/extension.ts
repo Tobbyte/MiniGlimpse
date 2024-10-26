@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { getSetting, updateSetting } from './settingsManager';
 
 ///
 /// This extension hides the minimap when no text is selected and shows it when text is selected.
@@ -32,9 +33,9 @@ let timer: NodeJS.Timeout | undefined;
 export function activate(context: vscode.ExtensionContext) {
     console.log('Extension MiniGlimpse is now active!');
 
-    vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
-    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
-    
+    updateSetting('editor', 'minimap.enabled', false);
+    updateSetting('editor', 'minimap.autohide', false);
+
     context.subscriptions.push(
         // Register own commands
         vscode.commands.registerCommand('mini-glimpse.enableMiniGlimpse', enableExtension),
@@ -60,7 +61,7 @@ function enableExtension() {
 function disableExtension() {
     isMiniGlimpseEnabled = false;
     // Reset minimap.enabled to its default
-    vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
+    updateSetting('editor', 'minimap.enabled', undefined);
     vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
 }
 
@@ -104,7 +105,7 @@ function requestHideMiniMap() {
         clearTimeout(timer); 
     }
 
-    vscode.workspace.getConfiguration('editor').update('minimap.autohide', true, vscode.ConfigurationTarget.Global);
+    updateSetting('editor', 'minimap.autohide', true);
     
     scheduleHideMiniMap(); 
 }
@@ -119,13 +120,13 @@ function scheduleHideMiniMap() {
 }
 
 function showMinimap() {
-    vscode.workspace.getConfiguration('editor').update('minimap.enabled', true, vscode.ConfigurationTarget.Global);
-    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global); 
+    updateSetting('editor', 'minimap.enabled', true);
+    updateSetting('editor', 'minimap.autohide', false);
 }
 
 function hideMiniMap(){
-    vscode.workspace.getConfiguration('editor').update('minimap.enabled', false, vscode.ConfigurationTarget.Global);
-    vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
+    updateSetting('editor', 'minimap.enabled', false);
+    updateSetting('editor', 'minimap.autohide', false);
 }
 
 export function deactivate() { }
