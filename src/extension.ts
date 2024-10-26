@@ -40,6 +40,8 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.registerCommand('mini-glimpse.enableMiniGlimpse', enableExtension),
         vscode.commands.registerCommand('mini-glimpse.disableMiniGlimpse', disableExtension),
 
+        // Shadowing the default find command to show minimap when find widget is opened
+        vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened),
         
         // Listen to selection change event
         vscode.window.onDidChangeTextEditorSelection(handleSelectionChange),
@@ -74,6 +76,20 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
     } else if (!isMinimapScheduledToHide) { 
         requestHideMiniMap();
     }
+}
+
+
+function findWidgetOpened(e:any) {
+    // Since shadowing the default command 'disables' it, we need to call the original
+    vscode.commands.executeCommand('editor.actions.findWithArgs', {
+        searchString: 'test',
+        isRegex: false,
+        matchWholeWord: false,
+        isCaseSensitive: false,
+        findInSelection: false
+    });
+    
+    requestShowMiniMap();
 }
 
 function requestShowMiniMap() {
