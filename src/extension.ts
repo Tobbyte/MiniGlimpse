@@ -16,10 +16,17 @@ import * as vscode from 'vscode';
 ///
 
 
+// Populates the debug window with text for testing
+let isDebug = true;
 
-let isDebug = false;
+
 
 let isMiniGlimpseEnabled = true;
+
+// Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
+let isMinimapScheduledToHide = false;
+
+// Schedules hiding the minimap
 let timer: NodeJS.Timeout | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
@@ -29,12 +36,13 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.getConfiguration('editor').update('minimap.autohide', false, vscode.ConfigurationTarget.Global);
     
     context.subscriptions.push(
+        // Register own commands
         vscode.commands.registerCommand('mini-glimpse.enableMiniGlimpse', enableExtension),
-        vscode.commands.registerCommand('mini-glimpse.disableMiniGlimpse', disableExtension)
-    );
+        vscode.commands.registerCommand('mini-glimpse.disableMiniGlimpse', disableExtension),
 
-    context.subscriptions.push(
-        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange)
+        
+        // Listen to selection change event
+        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange),
     );
 
     if (isDebug) {
@@ -53,8 +61,6 @@ function disableExtension() {
     vscode.workspace.getConfiguration('editor').update('minimap.enabled', undefined, vscode.ConfigurationTarget.Global);
     vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
 }
-
-let isMinimapScheduledToHide = false; // Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
 
 function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
     if (!isMiniGlimpseEnabled) {
@@ -108,6 +114,9 @@ function hideMiniMap(){
 
 export function deactivate() { }
 
+
+
+///
 /// Debugging helper function to populate the editor with text
 const populateEditorWithText = async () => {
     const document = await vscode.workspace.openTextDocument({ content:
