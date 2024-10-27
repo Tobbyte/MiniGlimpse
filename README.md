@@ -35,3 +35,9 @@ This extension provides the following commands:
 * * [ ] fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
 * * [ ] autohide delay setting
 * * [ ] open / close when search is active
+
+
+## Warning
+
+VS Code's API currently doesn't allow direct manipulation of the DOM for extensions.
+Due to this limitation, MiniGlimpse toggles the minimap by changing its on/off state in the User/Workspace setting.
