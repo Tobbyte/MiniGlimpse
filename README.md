@@ -26,15 +26,17 @@ This extension provides the following commands:
 ## TODOs
 
 * [x] enable when start search
-* [ ] settings: enable/disable, autohide delay, use autohide animation, Global or Workspace
-* [ ] ? option to disable setting "Editor: Selection Highlight" ?
-* [ ] save minimap and autohide settings on first init and restore to when disabled
-* [ ] debounce handleSelectionChange
+* [x] use autohide animation
+* [x] enable/disable settings
+* [ ] autohide delay
+* [ ] use Global or Workspace settings
+* [ ] save all changed settings on first init and restore when disabled
+* [ ] option to disable minimapGutter.added/modified/deleted-Background
 * [ ] tests
-* Add Features:
-* * [ ] fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
-* * [ ] autohide delay setting
-* * [ ] open / close when search is active
+
+* considerations:
+    * [ ] debounce handleSelectionChange
+    * [ ] fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
 
 
 ## Warning

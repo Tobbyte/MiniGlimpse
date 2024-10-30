@@ -13,9 +13,13 @@ import { getSetting, updateSetting } from './settingsManager';
 /// - minimap.disabled
 /// - minimap.autohide
 ///
+/// The extension also shadows the default find command to show the minimap when the find widget is opened.
+///
+/// The extension sets the following editor settings:
+/// - minimap.enabled
+///
 /// Accomodates issue #232011: Show minimap only during search (https://github.com/microsoft/vscode/issues/232011)
 ///
-
 
 // Populates the debug window with text for testing
 let isDebug = true;
