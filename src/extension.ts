@@ -61,46 +61,48 @@ export function activate(context: vscode.ExtensionContext) {
     }
 }
 
-    const registerEventListeners = () => {
-        if (isDebug) {console.log('Event listeners registered');}
 
-        // Listen to selection change event
-        selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(handleSelectionChange);
+const registerEventListeners = () => {
+    if (isDebug) { console.log('Event listeners registered'); }
 
-        // Shadowing the default find command to show minimap when find widget is opened
-        findCommandListener = vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened);
+    // Listen to selection change event
+    selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(handleSelectionChange);
 
-        subscriptions.push(selectionChangeListener, findCommandListener);
-    };
+    // Shadowing the default find command to show minimap when find widget is opened
+    findCommandListener = vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened);
+
+    subscriptions.push(selectionChangeListener, findCommandListener);
+};
 
 
-    const unregisterEventListeners = () => {
-        if (isDebug) {console.log('Event listeners unregistered');}
+const unregisterEventListeners = () => {
+    if (isDebug) { console.log('Event listeners unregistered'); }
 
-        selectionChangeListener?.dispose();
-        findCommandListener?.dispose();
-        selectionChangeListener = undefined;
-        findCommandListener = undefined;
-    };
+    selectionChangeListener?.dispose();
+    findCommandListener?.dispose();
+    selectionChangeListener = undefined;
+    findCommandListener = undefined;
+};
 
-    
-    function handleConfigurationChange(e: vscode.ConfigurationChangeEvent) {
-        if (listenForSettingsChanges) {
-            if (e.affectsConfiguration("miniGlimpse.enabled")) {
-                if (isDebug) {console.log('MiniGlimpse settings changed to: ', e.affectsConfiguration("miniGlimpse.enabled"), getSetting('miniGlimpse', 'enabled'));}
-                
-                // MiniGlimpse setting changed
-                if (getSetting('miniGlimpse', 'enabled')) {
-                    enableExtension();
-                } else{
-                    disableExtension();
-                }
+
+function handleConfigurationChange(e: vscode.ConfigurationChangeEvent) {
+    if (listenForSettingsChanges) {
+        if (e.affectsConfiguration("miniGlimpse.enabled")) {
+            if (isDebug) { console.log('MiniGlimpse settings changed to: ', e.affectsConfiguration("miniGlimpse.enabled"), getSetting('miniGlimpse', 'enabled')); }
+
+            // MiniGlimpse setting changed
+            if (getSetting('miniGlimpse', 'enabled')) {
+                enableExtension();
+            } else {
+                disableExtension();
             }
         }
     }
+}
+
 
 function enableExtension() {
-    if (isDebug) {console.log('Enabling MiniGlimpse extension...');}
+    if (isDebug) { console.log('Enabling MiniGlimpse extension...'); }
 
     vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
 
@@ -113,8 +115,9 @@ function enableExtension() {
     updateSetting('editor', 'minimap.autohide', false);
 }
 
+
 function disableExtension() {
-    if (isDebug) {console.log('Disabling MiniGlimpse extension...');}
+    if (isDebug) { console.log('Disabling MiniGlimpse extension...'); }
 
     unregisterEventListeners();
 
@@ -123,7 +126,7 @@ function disableExtension() {
 
     // Reset minimap.enabled to its default
     updateSetting('editor', 'minimap.enabled', undefined);
-    
+
     vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
 }
 
@@ -133,13 +136,13 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
 
     if (isTextSelected) {
         requestShowMiniMap();
-    } else if (!isMinimapScheduledToHide) { 
+    } else if (!isMinimapScheduledToHide) {
         requestHideMiniMap();
     }
 }
 
 
-function findWidgetOpened(e:any) {
+function findWidgetOpened(e: any) {
     // Since shadowing the default command 'disables' it, we need to call the original
     vscode.commands.executeCommand('editor.actions.findWithArgs', {
         searchString: 'test',
@@ -148,26 +151,29 @@ function findWidgetOpened(e:any) {
         isCaseSensitive: false,
         findInSelection: false
     });
-    
+
     requestShowMiniMap();
 }
+
 
 function requestShowMiniMap() {
     isMinimapScheduledToHide = false; // Text selected, don't hide
     showMinimap();
 }
 
+
 function requestHideMiniMap() {
     // No text selected, schedule hiding if not already scheduled
     isMinimapScheduledToHide = true;
     if (timer) {
-        clearTimeout(timer); 
+        clearTimeout(timer);
     }
 
     updateSetting('editor', 'minimap.autohide', true);
-    
-    scheduleHideMiniMap(); 
+
+    scheduleHideMiniMap();
 }
+
 
 function scheduleHideMiniMap() {
     timer = setTimeout(() => {
@@ -178,12 +184,14 @@ function scheduleHideMiniMap() {
     }, 500);
 }
 
+
 function showMinimap() {
     updateSetting('editor', 'minimap.enabled', true);
     updateSetting('editor', 'minimap.autohide', false);
 }
 
-function hideMiniMap(){
+
+function hideMiniMap() {
     updateSetting('editor', 'minimap.enabled', false);
     updateSetting('editor', 'minimap.autohide', false);
 }
@@ -195,23 +203,24 @@ export function deactivate() { }
 ///
 /// Debugging helper function to populate the editor with text
 const populateEditorWithText = async () => {
-    const document = await vscode.workspace.openTextDocument({ content:
-        'Sample text to select for debugging.\n' +
-        'Yadda Yadda try and select me.\n' +
-        ' \n' +
-        ' \n' +
-        'I am a text that you can select.\n' +
-        'Select me to see the minimap.\n' +
-        'Unselect me to hide the minimap.\n' +
-        ' \n' +
-        ' \n' +
-        'Select me to see the minimap.\n' +
-        'Unselect me to hide the minimap.\n' +
-        ' \n' +
-        ' \n' +
-        ' \n' +
-        ' \n' +
-        'Love You! ❤️'
+    const document = await vscode.workspace.openTextDocument({
+        content:
+            'Sample text to select for debugging.\n' +
+            'Yadda Yadda try and select me.\n' +
+            ' \n' +
+            ' \n' +
+            'I am a text that you can select.\n' +
+            'Select me to see the minimap.\n' +
+            'Unselect me to hide the minimap.\n' +
+            ' \n' +
+            ' \n' +
+            'Select me to see the minimap.\n' +
+            'Unselect me to hide the minimap.\n' +
+            ' \n' +
+            ' \n' +
+            ' \n' +
+            ' \n' +
+            'Love You! ❤️'
     });
     await vscode.window.showTextDocument(document);
 };
