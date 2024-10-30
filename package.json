@@ -38,7 +38,17 @@
         "command": "mini-glimpse.disableMiniGlimpse",
         "title": "disable MiniGlimpse"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "MiniGlimpse",
+      "properties": {
+        "miniGlimpse.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable MiniGlimpse"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
