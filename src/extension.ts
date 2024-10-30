@@ -21,55 +21,114 @@ import { getSetting, updateSetting } from './settingsManager';
 let isDebug = true;
 
 
-
-let isMiniGlimpseEnabled = true;
-
 // Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
 let isMinimapScheduledToHide = false;
 
 // Schedules hiding the minimap
 let timer: NodeJS.Timeout | undefined;
 
+let subscriptions: vscode.Disposable[] = [];
+
+// Store disposables for event listeners
+let selectionChangeListener: vscode.Disposable | undefined;
+let findCommandListener: vscode.Disposable | undefined;
+
+// Flag to prevent reaction to configuration changes when updating settings
+let listenForSettingsChanges = true;
+
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Extension MiniGlimpse is now active!');
+    if (isDebug) {
+        populateEditorWithText();
+        console.log("Extension MiniGlimpse is now active!", "isEnabled: ", getSetting('miniGlimpse', 'enabled'));
+    }
 
-    updateSetting('editor', 'minimap.enabled', false);
-    updateSetting('editor', 'minimap.autohide', false);
+    subscriptions = context.subscriptions;
 
-    context.subscriptions.push(
+    subscriptions.push(
         // Register own commands
         vscode.commands.registerCommand('mini-glimpse.enableMiniGlimpse', enableExtension),
         vscode.commands.registerCommand('mini-glimpse.disableMiniGlimpse', disableExtension),
 
-        // Shadowing the default find command to show minimap when find widget is opened
-        vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened),
-        
-        // Listen to selection change event
-        vscode.window.onDidChangeTextEditorSelection(handleSelectionChange),
+        // Listen for configuration changes (User changes settings)
+        vscode.workspace.onDidChangeConfiguration(handleConfigurationChange)
     );
 
-    if (isDebug) {
-        populateEditorWithText();
+
+    // Check if extension is enabled or if no setting is found its its first run, then enable
+    const state = getSetting('miniGlimpse', 'enabled');
+    if (state === undefined || state === true) {
+        enableExtension();
     }
 }
 
+    const registerEventListeners = () => {
+        if (isDebug) {console.log('Event listeners registered');}
+
+        // Listen to selection change event
+        selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(handleSelectionChange);
+
+        // Shadowing the default find command to show minimap when find widget is opened
+        findCommandListener = vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened);
+
+        subscriptions.push(selectionChangeListener, findCommandListener);
+    };
+
+
+    const unregisterEventListeners = () => {
+        if (isDebug) {console.log('Event listeners unregistered');}
+
+        selectionChangeListener?.dispose();
+        findCommandListener?.dispose();
+        selectionChangeListener = undefined;
+        findCommandListener = undefined;
+    };
+
+    
+    function handleConfigurationChange(e: vscode.ConfigurationChangeEvent) {
+        if (listenForSettingsChanges) {
+            if (e.affectsConfiguration("miniGlimpse.enabled")) {
+                if (isDebug) {console.log('MiniGlimpse settings changed to: ', e.affectsConfiguration("miniGlimpse.enabled"), getSetting('miniGlimpse', 'enabled'));}
+                
+                // MiniGlimpse setting changed
+                if (getSetting('miniGlimpse', 'enabled')) {
+                    enableExtension();
+                } else{
+                    disableExtension();
+                }
+            }
+        }
+    }
+
 function enableExtension() {
-    isMiniGlimpseEnabled = true;
+    if (isDebug) {console.log('Enabling MiniGlimpse extension...');}
+
     vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
+
+    registerEventListeners();
+
+    listenForSettingsChanges = false; // Prevent reacting to settings changes
+    updateSetting('miniGlimpse', 'enabled', true).then(() => listenForSettingsChanges = true);
+
+    updateSetting('editor', 'minimap.enabled', false);
+    updateSetting('editor', 'minimap.autohide', false);
 }
 
 function disableExtension() {
-    isMiniGlimpseEnabled = false;
+    if (isDebug) {console.log('Disabling MiniGlimpse extension...');}
+
+    unregisterEventListeners();
+
+    listenForSettingsChanges = false; // Prevent reacting to settings changes
+    updateSetting('miniGlimpse', 'enabled', false).then(() => listenForSettingsChanges = true);
+
     // Reset minimap.enabled to its default
     updateSetting('editor', 'minimap.enabled', undefined);
+    
     vscode.window.showInformationMessage('MiniGlimpse extension disabled. Using default VS Code settings.');
 }
 
-function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
-    if (!isMiniGlimpseEnabled) {
-        return; 
-    }
 
+function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
     const isTextSelected = event.selections.some(selection => !selection.isEmpty);
 
     if (isTextSelected) {
