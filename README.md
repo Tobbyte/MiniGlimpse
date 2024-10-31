@@ -1,7 +1,6 @@
-# mini-glimpse README
 # MiniGlimpse
 
-MiniGlimpse is an extension that displays the minimap only when text is selected, providing a cleaner and more focused coding environment.
+MiniGlimpse displays the minimap only when text is selected, providing a cleaner and more focused coding environment.
 
 
 ## Commands
@@ -14,13 +13,21 @@ This extension provides the following commands:
 
 ## Extension Settings
 
-* coming soon
+* `miniGlimpse.enabled`
 
 
 ## Release Notes
 
+### 1.2.1
+* now with updated readme :roll_eyes:
+
+### 1.2.0
+* Set own settings
+* show Minimap when find widget is opened
+
 ### 1.0.0
 * Initial release
+
 
 
 ## TODOs

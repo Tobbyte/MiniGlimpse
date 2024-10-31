@@ -15,8 +15,8 @@ import { getSetting, updateSetting } from './settingsManager';
 ///
 /// The extension also shadows the default find command to show the minimap when the find widget is opened.
 ///
-/// The extension sets the following editor settings:
-/// - minimap.enabled
+/// The extension offers the following settings:
+/// - miniGlimpse.enabled
 ///
 /// Accomodates issue #232011: Show minimap only during search (https://github.com/microsoft/vscode/issues/232011)
 ///
