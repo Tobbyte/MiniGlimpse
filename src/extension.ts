@@ -22,8 +22,7 @@ import { getSetting, updateSetting } from './settingsManager';
 ///
 
 // Populates the debug window with text for testing
-let isDebug = true;
-
+let isDebug = false;
 
 // Track if request for hiding the minimap is already sheduled; prevents closing after reselecting text
 let isMinimapScheduledToHide = false;
