@@ -60,7 +60,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Check if extension is enabled or if no setting is found its its first run, then enable
     const state = getSetting('miniGlimpse', 'enabled');
-    if (state === undefined || state === true) {
+    if (state === undefined) {
+        // First run
+        enableExtension();
+        vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
+    } else if (state === true) {
         enableExtension();
     }
 }
@@ -107,8 +111,6 @@ function handleConfigurationChange(e: vscode.ConfigurationChangeEvent) {
 
 function enableExtension() {
     if (isDebug) { console.log('Enabling MiniGlimpse extension...'); }
-
-    vscode.window.showInformationMessage('MiniGlimpse extension enabled.');
 
     registerEventListeners();
 
