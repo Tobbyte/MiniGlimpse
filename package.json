@@ -2,7 +2,7 @@
   "name": "mini-glimpse",
   "displayName": "MiniGlimpse",
   "description": "MiniGlimpse displays the minimap only when text is selected, providing a cleaner and more focused coding environment.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engines": {
     "vscode": "^1.94.0"
   },
