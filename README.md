@@ -18,6 +18,9 @@ This extension provides the following commands:
 
 ## Release Notes
 
+### 1.2.2
+* fix: search widget openes with "test" as searchString.
+
 ### 1.2.1
 * now with updated readme :roll_eyes:
 
