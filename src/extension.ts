@@ -147,10 +147,14 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
 }
 
 
-function findWidgetOpened(e: any) {
-    // Since shadowing the default command 'disables' it, we need to call the original
+function findWidgetOpened(editor: vscode.TextEditor) {
+    const selection = editor.selection;
+    const searchString = selection.isEmpty
+        ? editor.document.getText(editor.document.getWordRangeAtPosition(selection.active))
+        : editor.document.getText(selection);
+
     vscode.commands.executeCommand('editor.actions.findWithArgs', {
-        searchString: 'test',
+        searchString: searchString,
         isRegex: false,
         matchWholeWord: false,
         isCaseSensitive: false,
