@@ -18,6 +18,10 @@ This extension provides the following commands:
 
 ## Release Notes
 
+### 1.2.3
+* fix: stop registering the build-in `actions.find` command b/c messing with the find widget is no fun.
+So no minimap auto open on cmd-f without having to select a word first like a neandertaler.
+
 ### 1.2.2
 * fix: search widget openes with "test" as searchString.
 
@@ -35,7 +39,6 @@ This extension provides the following commands:
 
 ## TODOs
 
-* [x] enable when start search
 * [x] use autohide animation
 * [x] enable/disable settings
 * [ ] autohide delay
@@ -48,6 +51,7 @@ This extension provides the following commands:
     * [ ] debounce handleSelectionChange
     * [ ] fade in animation (not directly supported by VS Code, needs manually transitioning opacity)
 
+* [ ] enable when start search - see 1.2.3: will not implement.
 
 ## Warning
 
