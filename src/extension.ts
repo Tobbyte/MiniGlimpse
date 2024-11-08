@@ -75,10 +75,8 @@ const registerEventListeners = () => {
     // Listen to selection change event
     selectionChangeListener = vscode.window.onDidChangeTextEditorSelection(handleSelectionChange);
 
-    // Shadowing the default find command to show minimap when find widget is opened
-    findCommandListener = vscode.commands.registerTextEditorCommand('actions.find', findWidgetOpened);
 
-    subscriptions.push(selectionChangeListener, findCommandListener);
+    subscriptions.push(selectionChangeListener);
 };
 
 
@@ -144,24 +142,6 @@ function handleSelectionChange(event: vscode.TextEditorSelectionChangeEvent) {
     } else if (!isMinimapScheduledToHide) {
         requestHideMiniMap();
     }
-}
-
-
-function findWidgetOpened(editor: vscode.TextEditor) {
-    const selection = editor.selection;
-    const searchString = selection.isEmpty
-        ? editor.document.getText(editor.document.getWordRangeAtPosition(selection.active))
-        : editor.document.getText(selection);
-
-    vscode.commands.executeCommand('editor.actions.findWithArgs', {
-        searchString: searchString,
-        isRegex: false,
-        matchWholeWord: false,
-        isCaseSensitive: false,
-        findInSelection: false
-    });
-
-    requestShowMiniMap();
 }
 
 
