@@ -2,7 +2,16 @@
 
 MiniGlimpse displays the minimap only when text is selected, providing a cleaner and more focused coding environment.
 
+##
+##
+##
+### ### Please upvote on GitHub ### ###
+* This feature request is now a candidate for the official VS CODE backlog. The community has 60 days to upvote the issue. If it receives 20 upvotes it will be moved to the vs code backlog.
+### ### Upvote on GitHub to [make it real](https://github.com/microsoft/vscode/issues/232011) ### ###
 
+##
+##
+##
 ## Commands
 
 This extension provides the following commands:

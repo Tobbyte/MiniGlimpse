@@ -2,7 +2,7 @@
   "name": "mini-glimpse",
   "displayName": "MiniGlimpse",
   "description": "MiniGlimpse displays the minimap only when text is selected, providing a cleaner and more focused coding environment.",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "engines": {
     "vscode": "^1.94.0"
   },
@@ -10,9 +10,9 @@
     "Other"
   ],
   "publisher": "Tobbyte",
-	"author": {
-		"name": "Tobbyte"
-	},
+  "author": {
+    "name": "Tobbyte"
+  },
   "keywords": [
     "minimap",
     "miniglimpse",
@@ -26,7 +26,9 @@
     "selection",
     "on select"
   ],
-  "activationEvents": ["onStartupFinished"],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -73,7 +75,7 @@
   "license": "MIT",
   "pricing": "Free",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/Tobbyte/MiniGlimpse"
-    }
+    "type": "git",
+    "url": "https://github.com/Tobbyte/MiniGlimpse"
+  }
 }
